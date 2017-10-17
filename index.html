@@ -2,16 +2,21 @@
 <meta charset="utf-8">
 <style>
 
-.links line {
+line {
   stroke: #999;
   stroke-opacity: 0.6;
 }
 
-.nodes circle {
+.node circle {
   stroke: #fff;
   stroke-width: 1.5px;
 }
-
+.node text{
+    x:0; y:35;
+    font-family:Verdana;
+    font-size:35;
+    /*stroke: white;*/
+}
 </style>
 <svg width="1400" height="900"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -29,54 +34,63 @@ var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody())
     .force("center", d3.forceCenter(width / 2, height / 2));
 
-    graph = data
 
   var link = svg.append("g")
       .attr("class", "links")
     .selectAll("line")
-    .data(graph.links)
+    .data(data.links)
     .enter().append("line")
       .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
 
-  var node = svg.append("g")
-      .attr("class", "nodes")
-    .selectAll("circle")
-    .data(graph.nodes)
-    .enter().append("circle")
-      .attr("r", 5)
-      .attr("fill", function(d) { return color(d.group); })
-      .call(d3.drag()
-          .on("start", dragstarted)
-          .on("drag", dragged)
-          .on("end", dragended));
+  var node = svg.selectAll("g").attr("class", "nodes")
+        .data(data.nodes)
+        .enter().append("g").attr("class", "node").call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
 
-node.selectAll("circle").on("mouseover", mouseover)
+  node.append("circle")
+            .attr("r", 5)
+            .attr("fill", function(d) { return color(d.group); });
+
+  node.selectAll("circle").on("mouseover", mouseover)
           .on("mouseout", mouseout);
 
 
-  node.append("title")
-      .text(function(d) { return d.id; });
+ /* node.append("title")
+      .text(function(d) { return d.id; });*/
+  node.append("text")
+          .attr("dx", 1)
+          .attr("dy", ".35em")
+          .text(function(d) { return d.id });
 
-  simulation
-      .nodes(graph.nodes)
+  simulation.nodes(data.nodes)
       .on("tick", ticked);
 
   simulation.force("link")
-      .links(graph.links);
+      .links(data.links);
 
   function ticked() {
-    link
-        .attr("x1", function(d) { return d.source.x; })
+    link.attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
 
-    node
-        .attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
+    //node.attr("cx", function(d) { return d.x; }).attr("cy", function(d) { return d.y; });
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   }
 
+  function mouseover(d) {
+    d3.select(this).transition()
+        .duration(750)
+        .attr("r", 16);
+  }
 
+  function mouseout(d) {
+    d3.select(this).transition()
+        .duration(750)
+        .attr("r", 8);
+  }
 function dragstarted(d) {
   if (!d3.event.active) simulation.alphaTarget(0.3).restart();
   d.fx = d.x;
@@ -94,15 +108,5 @@ function dragended(d) {
   d.fy = null;
 }
 
-function mouseover(d) {
-  d3.select(this).select("circle").transition()
-      .duration(750)
-      .attr("r", 16);
-}
 
-function mouseout(d) {
-  d3.select(this).select("circle").transition()
-      .duration(750)
-      .attr("r", 8);
-}
 </script>
