@@ -1,0 +1,103 @@
+<html>
+<body>
+ <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div id="control" style="z-index:10000; position:absolute; width: 300px;  display:block; background: #333; border:thin solid black; border-radius:9px; color:lightgrey; font-family: 'Times-Roman'; font-size:16px; font-style: italic; padding: 8px;">
+    <form>
+         Name: <input id="name" type="text" value="nothing"><br>
+         <input type="range" name="points" min="-10" step="0.2" max="10" style="width:280px"><br>
+         <input id="description" type="text"><br>
+         Description: <input  id="done" type="button" value="Done">
+    </form>
+</div>
+
+<div id="sankey_multiple" style="width: 900px; height: 300px;"></div>
+<script type="text/javascript">
+// control: name range description done
+ //var control, name, range, description, done;
+//documen.onload = function() {
+     var control = document.getElementById("control");
+     var name = document.getElementById("name");
+     var range = document.getElementById("range");
+     var description = document.getElementById("description");
+     var done = document.getElementById("done");
+//};
+
+var myGraph = [
+   [ 'Brazil', 'Portugal', 2 ], [ 'Brazil', 'France', 1 ],[ 'Brazil', 'Spain', 1 ],[ 'Brazil', 'England', 1 ],
+   [ 'Canada', 'Portugal', 1 ], [ 'Canada', 'France', 5 ], [ 'Canada', 'England', 1 ],
+   [ 'Mexico', 'Portugal', 1 ], [ 'Mexico', 'France', 1 ], [ 'Mexico', 'Spain', 5 ], [ 'Mexico', 'England', 1 ],
+   [ 'USA', 'Portugal', 1 ], [ 'USA', 'France', 1 ], [ 'USA', 'Spain', 1 ], [ 'USA', 'England', 5 ],
+   [ 'Portugal', 'Angola', 2 ], [ 'Portugal', 'Senegal', 1 ], [ 'Portugal', 'Morocco', 1 ], [ 'Portugal', 'South Africa', 3 ],
+   [ 'France', 'Angola', 1 ], [ 'France', 'Senegal', 3 ], [ 'France', 'Mali', 3 ], [ 'France', 'Morocco', 3 ], [ 'France', 'South Africa', 1 ],
+   [ 'Spain', 'Senegal', 1 ], [ 'Spain', 'Morocco', 3 ], [ 'Spain', 'South Africa', 1 ],
+   [ 'England', 'Angola', 1 ], [ 'England', 'Senegal', 1 ], [ 'England', 'Morocco', 2 ], [ 'England', 'South Africa', 7 ],
+   [ 'South Africa', 'China', 5 ], [ 'South Africa', 'India', 1 ], [ 'South Africa', 'Japan', 3 ],
+   [ 'Angola', 'China', 5 ], [ 'Angola', 'India', 1 ], [ 'Angola', 'Japan', 3 ],
+   [ 'Senegal', 'China', 5 ], [ 'Senegal', 'India', 1 ], [ 'Senegal', 'Japan', 3 ],
+   [ 'Mali', 'China', 5 ], [ 'Mali', 'India', 1 ], [ 'Mali', 'Japan', 3 ],
+   [ 'Morocco', 'China', 5 ], [ 'Morocco', 'India', 1 ], [ 'Morocco', 'Japan', 3 ]
+];
+
+  google.charts.load("current", {packages:["sankey"]});
+  google.charts.setOnLoadCallback(drawChart);
+  var chart;
+
+function selectHandler(e){
+    var ObjectName = chart.getSelection()[0]; // JSON.stringify(chart.getSelection())
+    if(chart.getSelection()[0] == undefined) {
+        control.style.display = "none";
+        return;
+    }
+    control.style.display = "block"
+    var name = document.getElementById("name");
+    name.value = ObjectName.name;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+   function doneEditing() {
+     control.style.display = "none";
+   }
+
+   done.addEventListener("click", doneEditing, false);
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+//{"c":[{"v":"Brazil"},{"v":"Portugal"},{"v":5}]},
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+function drawChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'From');
+    data.addColumn('string', 'To');
+    data.addColumn('number', 'Weight');
+    data.addRows(myGraph);
+
+    // Set chart options
+    // https://developers.google.com/chart/interactive/docs/gallery/sankey
+    var colors = ['#a6cee3', '#b2df8a', '#fb9a99', '#fdbf6f', '#cab2d6', '#ffff99', '#1f78b4', '#33a02c'];
+
+    var options = { width: 1200, height: 700,
+                      sankey: {
+                        node: { interactivity: true, // Allows you to select nodes. // colors: ['#b2df8a', '#fb9a99', '#fdbf6f', '#cab2d6', '#ffff99', '#1f78b4', '#33a02c', '#a6cee3' ],
+                          label: { fontName: 'Times-Roman', fontSize: 14, color: '#871b47', bold: true, italic: true }
+                        },
+                        link: { colorMode: 'gradient', colors: colors, color: { stroke: 'darkgrey', strokeWidth: 1 }
+                        }
+                      }
+                    };
+
+                    // Instantiate and draw our chart, passing in some options.
+                    chart = new google.visualization.Sankey(document.getElementById('sankey_multiple'));
+                    chart.draw(data, options);
+                    google.visualization.events.addListener(chart, 'select', selectHandler);
+}
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+</script>
+</body>
+</html>
