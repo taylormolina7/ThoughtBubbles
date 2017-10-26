@@ -1,0 +1,103 @@
+<html style="background: #333;">
+
+<style>
+.miboton{
+    background:purple;
+    border:thin solid blue;
+    color: white;
+    font-weight: bold;
+    font-family: 'Times-Roman';
+    font-style: italic;
+    font-size: 22px;
+    padding: 8px;
+    display: inline-block;
+    border-radius: 5px;
+}
+.miboton:hover{
+    background: Indigo;
+}
+ g{opacity:.3}
+ g:hover{opacity:1; z-index:1000;}
+</style>
+
+
+<div id="boton" class="miboton">
+    Insert!
+</div><br><br>
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+    <g id="e1"></g>
+    <g id="e2"></g>
+</svg>
+<script type="text/javascript">
+ var boton = document.getElementById("boton");
+
+ boton.addEventListener("click", saludar, false);
+////////////////////////////////////////////////////////////////////////////////
+function makeFibre(x1,y1,h1, x2,y2,h2){
+    hd = ((h1+h2)*0.25)*0.7
+    w = x2 - x1;
+    h = y2 - y1;
+    cx = x1 + (w*.5);
+    cy = y1 + (h*.5);
+
+    str = `M${x1} ${y1+h1}
+           L${x1} ${y1}
+           Q${x1+w*0.33} ${y1} ${cx+hd}, ${cy-hd}
+           T${x2} ${y2}
+           L${x2} ${y2+h2}
+           Q${x1+w*0.66} ${y2} ${cx-hd}, ${cy+hd}
+           T${x1} ${y1+h1}
+           Z`
+    return str
+}
+////////////////////////////////////////////////////////////////////////////////
+// Optionally: stroke="grey" stroke-width="1"
+function InsertFibre(el, fibre, color){ el.innerHTML +=  `<path d="${fibre}" fill="${color}"/>`; }
+function InsertBox(el, color, x, y, w, h){ el.innerHTML +=  `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${color}" stroke="black" stroke-width="1"/>`; }
+////////////////////////////////////////////////////////////////////////////////
+var boxWidth = 20;
+var LevelWidth = 200;
+var offsetX = boxWidth+LevelWidth;
+var Lstart = [boxWidth,  offsetX+boxWidth, (offsetX*2)+boxWidth, offsetX*3, offsetX*4 ];
+var Lend   = [offsetX,   offsetX*2,        (offsetX*3), (offsetX*4)-boxWidth ];
+////////////////////////////////////////////////////////////////////////////////
+function saludar(e){
+      var graph = document.getElementById("e1");
+      InsertBox(graph, "lightgreen", 0, 0, boxWidth, 20)
+      fibre = makeFibre(Lstart[0],1, 20,  Lend[0],200, 3);
+      InsertFibre(graph, fibre, "lightgreen");
+
+      InsertBox(graph, "lightgreen", Lend[0],200, boxWidth, 3);
+
+      fibre = makeFibre(Lstart[1],200, 3,  Lend[1],400, 30);
+      InsertFibre(graph, fibre, "lightgreen");
+
+      InsertBox(graph, "lightgreen", Lend[1],400, boxWidth, 30)
+
+
+
+      var graph = document.getElementById("e2");
+      InsertBox(graph, "red", 0, 20, boxWidth,   5)
+      fibre = makeFibre(Lstart[0],20, 5,  Lend[0],203, 45);
+      InsertFibre(graph, fibre, "red");
+
+      InsertBox(graph, "red",    Lend[0], 203, boxWidth,   45)
+      fibre = makeFibre(Lstart[1],203, 45,  Lend[1],200, 30);
+      InsertFibre(graph, fibre, "red");
+
+      InsertBox(graph, "red", Lend[1], 200, boxWidth, 30)
+
+
+}
+
+
+/*
+for( x in 1:16){
+    for( y in 1:16){
+        for( i in 1:5){
+         img3[x,y] += img1[i,y] * img2[x,i]
+        }
+    }
+}*/
+</script>
+</html>
